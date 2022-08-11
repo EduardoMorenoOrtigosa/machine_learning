@@ -22,7 +22,7 @@ def predict():
     input_df = pd.DataFrame(pd.Series([input_one,input_two,input_three,input_four]))
     prediction = model.predict(input_df)
 
-    return render_template('result.html',pred=f'The result is: {prediction}')
+    return render_template('results.html',pred=f'The result is: {prediction}')
 
 if  __name__ == '__main__':
     app.run(debug = True, host='0.0.0.0', port=80)
