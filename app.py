@@ -1,9 +1,10 @@
 from flask import Flask, request, url_for, redirect, render_template
 import pandas as pd 
 import pickle
+from flask_cors import CORS
 
-# depending on being called as the main program or module
 app = Flask(__name__)
+CORS(app)
 
 model = pickle.load(open("model_weights", "rb"))
 
