@@ -6,7 +6,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-model = pickle.load(open("model_weights", "rb"))
+model = pickle.load(open("model_weights.pkl", "rb"))
 
 @app.route('/')
 def use_template():
@@ -19,10 +19,11 @@ def predict():
     input_three = request.form['3']
     input_four = request.form['4']
 
-    input_df = pd.DataFrame(pd.Series([input_one,input_two,input_three,input_four]))
+    input_df = pd.DataFrame([pd.Series([input_one,input_two,input_three,input_four])])
+
     prediction = model.predict(input_df)
 
     return render_template('results.html',pred=f'The result is: {prediction}')
 
 if  __name__ == '__main__':
-    app.run(debug = True, host='0.0.0.0', port=80)
+    app.run(debug = True)

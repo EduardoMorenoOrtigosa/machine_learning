@@ -43,7 +43,7 @@ model.fit(X_train,y_train)
 ##### 3. Creating the weights #####
 
 import pickle
-#pickle.dump(model, open('model_weights', "wb"))
+pickle.dump(model, open('model_weights.pkl', "wb"))
 
 ##### 4. Studying possible outcome #####
 
