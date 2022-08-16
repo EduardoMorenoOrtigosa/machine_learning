@@ -46,7 +46,7 @@ def predict():
     elif (prediction[0][0] > 0.80): category = 'D'
     elif (prediction[0][0] > 0.50): category = 'E'
 
-    return render_template('results.html',pred=f'The probability of default for this client is: {result}%\nTherefore this client is categorized as {category} grade')
+    return render_template('results.html',pred=f'The probability of default for this client is: {result}%\n Client is categorized as {category} grade')
 
 if  __name__ == '__main__':
     app.run(debug = True)
