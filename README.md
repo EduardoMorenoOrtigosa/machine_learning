@@ -31,7 +31,7 @@ education_basic                   1.000000
 education_high.school             0.000000
 education_illiterate              0.000000
 education_professional.course     0.000000
-
+education_university.degree       0.000000
 
 -------------------------------------------------------------
 

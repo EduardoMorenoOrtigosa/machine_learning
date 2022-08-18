@@ -1,7 +1,8 @@
-from flask import Flask, request, url_for, redirect, render_template
+from flask import Flask, request, url_for, redirect, render_template, make_response
 import pandas as pd 
 import pickle
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 CORS(app)
@@ -47,6 +48,63 @@ def predict():
     elif (prediction[0][0] > 0.50): category = 'E'
 
     return render_template('results.html',pred=f'The probability of default for this client is: {result}%\n Client is categorized as {category} grade')
+
+
+ALLOWED_EXTENSIONS = set(['csv'])
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/predict_form', methods=['POST','GET'])
+def predict_form():
+    
+    if request.method == "POST":
+
+        file_ = request.files["file"]
+
+        if file_ and allowed_file(file_.filename):
+            filename = secure_filename(file_.filename)
+
+            new_filename = filename.split(".")[0]
+            
+            df = pd.read_csv(file_)
+            #print(df.head())
+
+            data = df.copy()
+            # tranform cat variables
+            cat_vars=["education"]
+
+            for var in cat_vars:
+                cat_list = 'var'+'_'+var
+                cat_list = pd.get_dummies(data[var], prefix=var)
+                data1 = data.join(cat_list)
+                data = data1
+
+            cat_vars = ["education"]
+            data_vars = data.columns.values.tolist()
+            to_keep = [i for i in data_vars if i not in cat_vars]
+
+            data_final = data[to_keep]
+            data_final.drop(['loan_applicant_id'], axis=1, inplace=True)
+            data_final.drop(['y'], axis=1, inplace=True)
+
+            output_df = data_final.copy()
+            output_df["PD_output"] = [item[1] for item in model.predict_proba(output_df)]
+            
+            print(output_df.head())
+
+            resp = make_response(output_df.to_csv())
+            resp.headers["Content-Disposition"] = f"attachment; filename={new_filename}_processed.csv"
+            resp.headers["Content-Type"] = "text/csv"
+            
+            return resp
+        
+        return "Error in filename extension"
+
+    return render_template("upload.html")
+
+    #return render_template('results.html',pred=f'The probability of default for this client is: {result}%\n Client is categorized as {category} grade')
+
 
 if  __name__ == '__main__':
     app.run(debug = True)
